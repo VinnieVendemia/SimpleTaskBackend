@@ -1,0 +1,4 @@
+com/simplej/rest/App.class
+com/simplej/rest/dao/ClientDB.class
+com/simplej/rest/entity/Client.class
+com/simplej/rest/controller/ClientRESTController.class
