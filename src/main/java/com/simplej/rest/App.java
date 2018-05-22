@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import com.simplej.rest.controller.EventRESTController;
 import com.simplej.rest.controller.ProjectRESTController;
 import com.simplej.rest.dao.EventDB;
+import com.simplej.rest.dao.ProjectDB;
 import com.simplej.rest.entity.Event;
 import com.simplej.rest.entity.Project;
 import io.dropwizard.Application;
@@ -41,10 +42,8 @@ public class App extends Application<AppConfiguration> {
 	@Override
 	public void run(AppConfiguration c, Environment e) throws Exception {
 		LOGGER.info("Registering REST resources");
-		e.jersey().register(new ProjectRESTController(e.getValidator()));
-
-		final EventDB dao = new EventDB(hibernate.getSessionFactory());
-		e.jersey().register(new EventRESTController(e.getValidator(), dao));
+		e.jersey().register(new ProjectRESTController(e.getValidator(), new ProjectDB(hibernate.getSessionFactory())));
+		e.jersey().register(new EventRESTController(e.getValidator(), new EventDB(hibernate.getSessionFactory())));
 	}
 
 	public static void main(String[] args) throws Exception {

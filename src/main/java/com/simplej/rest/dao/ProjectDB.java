@@ -1,31 +1,39 @@
 package com.simplej.rest.dao;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import org.hibernate.SessionFactory;
 import com.simplej.rest.entity.Project;
 
-public class ProjectDB {
-	public static HashMap<Integer, Project> projects = new HashMap<>();
-	static {
-		projects.put(1, new Project(1, "Project 1", "red"));
-		projects.put(2, new Project(2, "Project 2", "blue"));
-		projects.put(3, new Project(3, "Project 3", "green"));
+import io.dropwizard.hibernate.AbstractDAO;
+
+public class ProjectDB extends AbstractDAO<Project> {
+	
+	public ProjectDB(SessionFactory sessionFactory) {
+		super(sessionFactory);
+	}
+	
+	public List<Project> getProjects() {
+		return list(namedQuery("findProjects"));
 	}
 
-	public static List<Project> getProjects() {
-		return new ArrayList<Project>(projects.values());
+	public Project getProject(Integer id) {
+		return get(id);
+	}
+	
+	public long createProject(Project project) {
+		return persist(project).getId();
 	}
 
-	public static Project getProject(Integer id) {
-		return projects.get(id);
+	public void updateProject(Integer id, Project project) {
+		// TODO
 	}
 
-	public static void updateProject(Integer id, Project project) {
-		projects.put(id, project);
-	}
+	public boolean removeProject(Integer id) {
+		final Project record = get(id);
+		if (null == record)
+			return false;
 
-	public static void removeProject(Integer id) {
-		projects.remove(id);
+		currentSession().delete(record);
+		return true;
 	}
 }

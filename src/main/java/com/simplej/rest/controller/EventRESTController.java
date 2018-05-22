@@ -57,7 +57,6 @@ public class EventRESTController {
 	@Timed
 	@UnitOfWork
 	public Response createEvent(Event event) throws URISyntaxException {
-		// validation
 		Set<ConstraintViolation<Event>> violations = validator.validate(event);
 		Event e = dao.getEvent(event.getId());
 		if (violations.size() > 0) {
@@ -68,10 +67,10 @@ public class EventRESTController {
 			return Response.status(Status.BAD_REQUEST).entity(validationMessages).build();
 		}
 		if (e != null) {
-			EventDB.updateEvent(event.getId(), event);
-			return Response.created(new URI("/events/" + event.getId())).build();
+			return Response.status(Status.CONFLICT).build();
 		} else
-			return Response.status(Status.NOT_FOUND).build();
+			dao.createEvent(event);
+			return Response.created(new URI("/events/" + event.getId())).build();
 	}
  
     @PUT
@@ -79,22 +78,24 @@ public class EventRESTController {
     @UnitOfWork
     @Path("/{id}")
     public Response updateEventById(@PathParam("id") Integer id, Event event) {
+    	return Response.status(Status.METHOD_NOT_ALLOWED).build();
+        // TODO
         // validation
-        Set<ConstraintViolation<Event>> violations = validator.validate(event);
-        Event e = dao.getEvent(event.getId());
-        if (violations.size() > 0) {
-            ArrayList<String> validationMessages = new ArrayList<String>();
-            for (ConstraintViolation<Event> violation : violations) {
-                validationMessages.add(violation.getPropertyPath().toString() + ": " + violation.getMessage());
-            }
-            return Response.status(Status.BAD_REQUEST).entity(validationMessages).build();
-        }
-        if (e != null) {
-            event.setId(id);
-            EventDB.updateEvent(id, event);
-            return Response.ok(event).build();
-        } else
-            return Response.status(Status.NOT_FOUND).build();
+//        Set<ConstraintViolation<Event>> violations = validator.validate(event);
+//        Event e = dao.getEvent(event.getId());
+//        if (violations.size() > 0) {
+//            ArrayList<String> validationMessages = new ArrayList<String>();
+//            for (ConstraintViolation<Event> violation : violations) {
+//                validationMessages.add(violation.getPropertyPath().toString() + ": " + violation.getMessage());
+//            }
+//            return Response.status(Status.BAD_REQUEST).entity(validationMessages).build();
+//        }
+//        if (e != null) {
+//            event.setId(id);
+////            EventDB.updateEvent(id, event);
+//            return Response.ok(event).build();
+//        } else
+//            return Response.status(Status.NOT_FOUND).build();
     }
  
     @DELETE
@@ -104,7 +105,7 @@ public class EventRESTController {
     public Response removeEventById(@PathParam("id") Integer id) {
     	Event event = dao.getEvent(id);
         if (event != null) {
-        	EventDB.removeEvent(id);
+        	dao.removeEvent(id);
             return Response.ok().build();
         } else
             return Response.status(Status.NOT_FOUND).build();

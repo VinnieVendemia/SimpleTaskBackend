@@ -20,4 +20,15 @@
 			<column name="color" type="VARCHAR(255)"/>
 		</createTable>
 	</changeSet>
+	<changeSet id="addTableProject" author="vinnie">
+		<createTable tableName="project">
+			<column name="id" type="INTEGER" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_audit" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="color" type="VARCHAR(255)"/>
+		</createTable>
+	</changeSet>
 </databaseChangeLog>

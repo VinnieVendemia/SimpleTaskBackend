@@ -16,39 +16,47 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import com.codahale.metrics.annotation.Timed;
 import com.simplej.rest.dao.ProjectDB;
 import com.simplej.rest.entity.Project;
+import io.dropwizard.hibernate.UnitOfWork;
 
 @Path("/projects")
 @Produces(MediaType.APPLICATION_JSON)
 public class ProjectRESTController {
 	private final Validator validator;
+	private ProjectDB dao;
 
-	public ProjectRESTController(Validator validator) {
+	public ProjectRESTController(Validator validator, ProjectDB dao) {
 		this.validator = validator;
+		this.dao = dao; 
 	}
 
 	@GET
+	@Timed
+	@UnitOfWork
 	public Response getProjects() {
-		return Response.ok(ProjectDB.getProjects()).build();
+		return Response.ok(dao.getProjects()).build();
 	}
 
 	@GET
+	@Timed
+	@UnitOfWork
 	@Path("/{id}")
 	public Response getProjectById(@PathParam("id") Integer id) {
-		Project proj = ProjectDB.getProject(id);
+		Project proj = dao.getProject(id);
 		if (proj != null)
 			return Response.ok(proj).build();
 		else
 			return Response.status(Status.NOT_FOUND).build();
 	}
 	
-	// TODO: Need to make this actually create a new project
 	@POST
+	@Timed
+	@UnitOfWork
 	public Response createProject(Project proj) throws URISyntaxException {
-		// validation
 		Set<ConstraintViolation<Project>> violations = validator.validate(proj);
-		Project e = ProjectDB.getProject(proj.getId());
+		Project e = dao.getProject(proj.getId());
 		if (violations.size() > 0) {
 			ArrayList<String> validationMessages = new ArrayList<String>();
 			for (ConstraintViolation<Project> violation : violations) {
@@ -57,39 +65,29 @@ public class ProjectRESTController {
 			return Response.status(Status.BAD_REQUEST).entity(validationMessages).build();
 		}
 		if (e != null) {
-			ProjectDB.updateProject(proj.getId(), proj);
-			return Response.created(new URI("/projects/" + proj.getId())).build();
+			return Response.status(Status.CONFLICT).build();
 		} else
-			return Response.status(Status.NOT_FOUND).build();
+			dao.createProject(proj);
+			return Response.created(new URI("/projects/" + proj.getId())).build();
 	}
 
     @PUT
+    @Timed
+	@UnitOfWork
     @Path("/{id}")
     public Response updateProjectById(@PathParam("id") Integer id, Project project) {
-        // validation
-        Set<ConstraintViolation<Project>> violations = validator.validate(project);
-        Project e = ProjectDB.getProject(project.getId());
-        if (violations.size() > 0) {
-            ArrayList<String> validationMessages = new ArrayList<String>();
-            for (ConstraintViolation<Project> violation : violations) {
-                validationMessages.add(violation.getPropertyPath().toString() + ": " + violation.getMessage());
-            }
-            return Response.status(Status.BAD_REQUEST).entity(validationMessages).build();
-        }
-        if (e != null) {
-            project.setId(id);
-            ProjectDB.updateProject(id, project);
-            return Response.ok(project).build();
-        } else
-            return Response.status(Status.NOT_FOUND).build();
+        // TODO
+    	return Response.status(Status.METHOD_NOT_ALLOWED).build();
     }
  
     @DELETE
+    @Timed
+	@UnitOfWork
     @Path("/{id}")
     public Response removeProjectById(@PathParam("id") Integer id) {
-        Project project = ProjectDB.getProject(id);
+    	Project project = dao.getProject(id);
         if (project != null) {
-        	ProjectDB.removeProject(id);
+        	dao.removeProject(id);
             return Response.ok().build();
         } else
             return Response.status(Status.NOT_FOUND).build();
