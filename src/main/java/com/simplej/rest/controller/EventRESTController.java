@@ -16,27 +16,37 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import com.codahale.metrics.annotation.Timed;
 import com.simplej.rest.dao.EventDB;
 import com.simplej.rest.entity.Event;
+
+import io.dropwizard.hibernate.UnitOfWork;
 
 @Path("/events")
 @Produces(MediaType.APPLICATION_JSON)
 public class EventRESTController {
 	private final Validator validator;
+	private EventDB dao;
 	
-	public EventRESTController(Validator validator) {
+	public EventRESTController(Validator validator, EventDB dao) {
         this.validator = validator;
+        this.dao = dao;
     }
 	
 	@GET
+	@Timed
+	@UnitOfWork
     public Response getEvents() {
-        return Response.ok(EventDB.getEvents()).build();
+        return Response.ok(dao.getEvents()).build();
     }
 	
     @GET
+    @Timed
+    @UnitOfWork
     @Path("/{id}")
     public Response getEventById(@PathParam("id") Integer id) {
-        Event event = EventDB.getEvent(id);
+        Event event = dao.getEvent(id);
         if (event != null)
             return Response.ok(event).build();
         else
@@ -44,10 +54,12 @@ public class EventRESTController {
     }
  
 	@POST
+	@Timed
+	@UnitOfWork
 	public Response createEvent(Event event) throws URISyntaxException {
 		// validation
 		Set<ConstraintViolation<Event>> violations = validator.validate(event);
-		Event e = EventDB.getEvent(event.getId());
+		Event e = dao.getEvent(event.getId());
 		if (violations.size() > 0) {
 			ArrayList<String> validationMessages = new ArrayList<String>();
 			for (ConstraintViolation<Event> violation : violations) {
@@ -63,11 +75,13 @@ public class EventRESTController {
 	}
  
     @PUT
+    @Timed
+    @UnitOfWork
     @Path("/{id}")
     public Response updateEventById(@PathParam("id") Integer id, Event event) {
         // validation
         Set<ConstraintViolation<Event>> violations = validator.validate(event);
-        Event e = EventDB.getEvent(event.getId());
+        Event e = dao.getEvent(event.getId());
         if (violations.size() > 0) {
             ArrayList<String> validationMessages = new ArrayList<String>();
             for (ConstraintViolation<Event> violation : violations) {
@@ -84,9 +98,11 @@ public class EventRESTController {
     }
  
     @DELETE
+    @Timed
+    @UnitOfWork
     @Path("/{id}")
     public Response removeEventById(@PathParam("id") Integer id) {
-    	Event event = EventDB.getEvent(id);
+    	Event event = dao.getEvent(id);
         if (event != null) {
         	EventDB.removeEvent(id);
             return Response.ok().build();

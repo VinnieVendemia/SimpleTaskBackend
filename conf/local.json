@@ -1,0 +1,35 @@
+{
+  "environment": "local",
+
+  "trans": {
+    "driverClass": "com.mysql.jdbc.Driver",
+    "user": "root",
+    "password": "asdf1234",
+    "url": "jdbc:mysql://localhost:3306/simple_task_app?useEncoding=true&characterEncoding=UTF-8&prepStmtCacheSize=100&prepStmtCacheSqlLimit=1024",
+    "maxWaitForConnection": "1s",
+    "validationQuery": "SELECT 1",
+    "minSize": "1",
+    "maxSize": "10",
+    "checkConnectionWhileIdle": "true",
+    "checkConnectionOnBorrow": "true",
+    "defaultTransactionIsolation": "READ_COMMITTED",
+    "properties": { "hibernate.dialect": "org.hibernate.dialect.MySQL5Dialect",
+      "hibernate.cache.region.factory_class": "com.jibe.hibernate.cache.JibeRegionFactory",
+      "hibernate.cache.use_query_cache": "true",
+      "hibernate.cache.use_second_level_cache": "true",
+      "hibernate.cache.default_cache_concurrency_strategy": "read-write",
+      "hibernate.jibe.host": "localhost",
+      "hibernate.jibe.port": 6379,
+      "hibernate.jibe.poolSize": 5,
+      "hibernate.jibe.timeout": 200,
+      "hibernate.jibe.ssl": false,
+      "hibernate.jibe.testWhileIdle": true,
+      "hibernate.jibe.resourceSettings": "/hibernate-redis.properties",
+      "hibernate.jibe.cacheTimeSeconds": 1200,
+      "hibernate.jibe.clearSupported": false,
+      "hibernate.jibe.cacheClientFactory": "com.jibe.hibernate.cache.redis.RedisClientFactory",
+      "hibernate.jibe.dogpilePrevention": true,
+      "hibernate.jibe.dogpilePrevention.expirationFactor": 5.5,
+      "hibernate.jibe.keyStrategy": "com.jibe.hibernate.cache.keystrategy.Md5KeyStrategy" }
+  }
+}

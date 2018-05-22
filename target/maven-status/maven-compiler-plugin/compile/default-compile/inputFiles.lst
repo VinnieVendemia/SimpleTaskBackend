@@ -1,5 +1,6 @@
 /Users/vinnievendemia/side_projects/SimpleJApplication/src/main/java/com/simplej/rest/App.java
 /Users/vinnievendemia/side_projects/SimpleJApplication/src/main/java/com/simplej/rest/entity/Project.java
+/Users/vinnievendemia/side_projects/SimpleJApplication/src/main/java/com/simplej/rest/AppConfiguration.java
 /Users/vinnievendemia/side_projects/SimpleJApplication/src/main/java/com/simplej/rest/dao/EventDB.java
 /Users/vinnievendemia/side_projects/SimpleJApplication/src/main/java/com/simplej/rest/controller/ProjectRESTController.java
 /Users/vinnievendemia/side_projects/SimpleJApplication/src/main/java/com/simplej/rest/controller/EventRESTController.java

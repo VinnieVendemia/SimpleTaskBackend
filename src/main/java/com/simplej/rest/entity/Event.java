@@ -1,14 +1,30 @@
 package com.simplej.rest.entity;
 
 import java.util.Date;
+import javax.persistence.Cacheable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.QueryHint;
+import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.QueryHints;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
+@Entity
+@DynamicUpdate
+@Table(name="event")
+@NamedQueries({ @NamedQuery(name="findEvents", query="SELECT OBJECT(o) FROM Event o ORDER BY o.id" , hints={@QueryHint(name=QueryHints.CACHEABLE, value="true") } ) } )
 public class Event {
- 	@NotNull
+ 	
+	@Id @NotNull
     private Integer id;
  	
  	@NotBlank @Length(min=1, max=255)
